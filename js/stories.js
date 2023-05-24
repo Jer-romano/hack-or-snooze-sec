@@ -18,28 +18,29 @@ async function getAndShowStoriesOnStart() {
  * add that story instance to favorites
  */
 
-function favoriteToggleHandler(evt) {
+function favoriteToggleHandler(evt) { //should change to finding story by ID
   let liElement = $(this).closest('li');
   //console.log("This: ", this);
-  let liIndex = liElement.index();
+  let storyId = liElement.attr("id");
    // console.log(liIndex);
-
-  console.log("You favorited/unfavorited something");
+  let story = findStoryUsingId(storyList.stories, storyId);
+  //console.log("You favorited/unfavorited something");
+  //console.log("Story: ", story);
   if(evt.target.classList.contains("far")) { //favoriting
     evt.target.classList.replace("far", "fas");
    
-   currentUser.addFavorite(storyList.stories[liIndex]);
+   currentUser.addFavorite(story);
   }
   else { //unfavoriting
     evt.target.classList.replace("fas", "far");
-    console.log("index to remove: ", liIndex);
-    currentUser.removeFavorite(storyList.stories[liIndex]);
+    //console.log("index to remove: ", liIndex);
+      currentUser.removeFavorite(story);
   }
 
 }
-
 $allStoriesList.on("click", "li span i", favoriteToggleHandler);
 $favStoriesList.on("click", "li span i", favoriteToggleHandler);
+$myStoriesList.on("click", "li span i", favoriteToggleHandler);
 
 async function createNewStoryAndUpdatePage(evt) {
   evt.preventDefault();
@@ -52,13 +53,19 @@ async function createNewStoryAndUpdatePage(evt) {
   putStoriesOnPage();
 }
 $submitForm.on("submit", createNewStoryAndUpdatePage);
+
+function findStoryUsingId(storyList, id) {
+  for(let story of storyList) {
+    if (story.storyId == id) return story;
+  }
+  return undefined;
+}
 /**
  * A render method to render HTML for an individual Story instance
  * - story: an instance of Story
  *
  * Returns the markup for the story.
  */
-
 function generateStoryMarkup(story, starClass) {
   // console.debug("generateStoryMarkup", story);
 
@@ -108,6 +115,24 @@ function putFavStoriesOnPage() {
   for(let story of currentUser.favorites) {
     const $story = generateStoryMarkup(story, "fas");
     $favStoriesList.append($story);
+  }
+
+}
+
+function putMyStoriesOnPage() {
+  console.debug("putMyStoriesOnPage");
+
+  $myStoriesList.empty();
+  for(let story of currentUser.ownStories) {
+    let $story;
+    if(currentUser != undefined && currentUser.favorites.indexOf(story) != -1) { //is a favorite
+      //console.log("Here is a favorite");
+      $story = generateStoryMarkup(story, "fas");
+    }
+    else { //not a favorite
+      $story = generateStoryMarkup(story, "far");
+    }
+    $myStoriesList.append($story);
   }
 
 }

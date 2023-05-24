@@ -48,6 +48,19 @@ function navFavoritesClick(evt) {
 }
 $navFavorites.on("click", navFavoritesClick);
 
+function navMyStoriesClick(evt) {
+  console.debug("navMyStoriesClick", evt);
+
+  hidePageComponents();
+  putMyStoriesOnPage();
+  $myStoriesList.show();
+
+  if(currentUser.ownStories.length == 0) {
+    $myStoriesList.append($("<h5>You haven't added any stories!</h5>"));
+  }
+}
+$navMyStories.on("click", navMyStoriesClick);
+
 /** When a user first logins in, update the navbar to reflect that. */
 function updateNavOnLogin() {
   console.debug("updateNavOnLogin");
@@ -57,4 +70,5 @@ function updateNavOnLogin() {
   $navUserProfile.text(`${currentUser.username}`).show();
   $navSubmit.show();
   $navFavorites.show();
+  $navMyStories.show();
 }

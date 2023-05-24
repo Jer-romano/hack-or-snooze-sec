@@ -94,6 +94,7 @@ class StoryList {
     const {story: {storyId, createdAt, title, author, url, username}} = response.data;
     let storyInstance = new Story({storyId, title, author, url, username, createdAt});
     this.stories.unshift(storyInstance); //adds story to beginning of list
+    user.ownStories.push(storyInstance);
     return storyInstance;
   }
 }
@@ -165,7 +166,8 @@ class User {
     });
     console.log("Response: ", response);
     //currentUser = response.data.user;
-    this.favorites.push(story);
+    this.favorites.push(story); //we don't need to create a new Story instance because it is being passed in
+    //currentUser = response.data.user;
   }
 
   async removeFavorite(story) {
@@ -174,7 +176,7 @@ class User {
       method: "DELETE",
       data: {token: this.loginToken} 
     });
-    console.log(response);
+    //console.log(response);
     let favIndex = currentUser.favorites.indexOf(story);
     if(favIndex == -1) console.log("STORY NOT FOUND");
     currentUser.favorites.splice(favIndex, 1); //remove story from favorites array
