@@ -83,11 +83,11 @@ function generateStoryMarkup(story, starClass) {
           ${story.title}
         </a>
         <small class="story-hostname">(${hostName})</small>
-        <small class="story-author">by ${story.author}</small>
         <span class="trash-can">${trashIcon}</span>
-        <small class="story-user">posted by ${story.username}</small>
-        
+        <p class="story-author">by ${story.author}</p>
+        <p class="story-user">posted by ${story.username}</p>
       </li>
+      <hr>
     `);
 }
 
