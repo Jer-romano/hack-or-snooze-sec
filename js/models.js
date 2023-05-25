@@ -97,6 +97,28 @@ class StoryList {
     user.ownStories.push(storyInstance);
     return storyInstance;
   }
+
+  getStoryIndex(storyId) {
+    for(let i = 0; i < this.stories.length; i++) {
+      if(this.stories[i].storyId == storyId) {
+        return i;
+      }
+    }
+    return -1;
+
+  }
+  async removeStory(user, storyId) {
+    let response = await axios({
+      url: `${BASE_URL}/stories/${storyId}`,
+      method: "DELETE",
+      data: {token: user.loginToken}
+    });
+    let sIndex = this.stories.findIndex(function(el) {
+      return el.storyId == storyId;
+    });
+    
+    this.stories.splice(sIndex, 1);
+  }
 }
 
 
@@ -180,6 +202,20 @@ class User {
     let favIndex = currentUser.favorites.indexOf(story);
     if(favIndex == -1) console.log("STORY NOT FOUND");
     currentUser.favorites.splice(favIndex, 1); //remove story from favorites array
+  }
+
+  removeStory(storyId) {
+    let sIndex = this.ownStories.findIndex(function(el) {
+      return el.storyId == storyId;
+    });
+    this.ownStories.splice(sIndex, 1);
+
+    let favIndex = this.favorites.findIndex(function(el) {
+      return el.storyId == storyId;
+    });
+    if( favIndex != -1) {
+      this.favorites.splice(favIndex, 1);
+    }
   }
   /** Login user with API, make User instance & return it.
 

@@ -3,6 +3,7 @@
 body {
   font-family: Arimo, sans-serif;
   margin: 8px 7.5vw;
+  background: linear-gradient(90deg, #4f99c7 0%, #d26eb4 50%, #4f99c7 100%);
 }
 
 h1 {

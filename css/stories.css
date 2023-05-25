@@ -6,7 +6,7 @@
 
 .stories-list > li {
   color: gray;
-  font-size: 0.8rem;
+  /* font-size: 0.8rem; */
   margin: 10px 0;
 }
 
@@ -16,12 +16,18 @@
   margin: 20px 30px;
 }
 
+i {
+  cursor: pointer;
+}
+.trash-can {
+  margin-left: 10px;
+}
 
 /* Individual stories */
 
 .story-link {
   color: black;
-  font-size: 0.85rem;
+  /* font-size: 0.85rem; */
   font-weight: normal;
   margin: 18px 0;
 }
@@ -32,8 +38,10 @@
 
 .story-author {
   margin-left: 2em;
+  color: green;
 }
 
 .story-user {
   display: block;
+  color: orange;
 }

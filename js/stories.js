@@ -20,7 +20,7 @@ async function getAndShowStoriesOnStart() {
 
 function favoriteToggleHandler(evt) { //should change to finding story by ID
   let liElement = $(this).closest('li');
-  //console.log("This: ", this);
+  console.log("This: ", this);
   let storyId = liElement.attr("id");
    // console.log(liIndex);
   let story = findStoryUsingId(storyList.stories, storyId);
@@ -38,9 +38,9 @@ function favoriteToggleHandler(evt) { //should change to finding story by ID
   }
 
 }
-$allStoriesList.on("click", "li span i", favoriteToggleHandler);
-$favStoriesList.on("click", "li span i", favoriteToggleHandler);
-$myStoriesList.on("click", "li span i", favoriteToggleHandler);
+$allStoriesList.on("click", "li span i.fa-star", favoriteToggleHandler);
+$favStoriesList.on("click", "li span i.fa-star", favoriteToggleHandler);
+$myStoriesList.on("click", "li span i.fa-star", favoriteToggleHandler);
 
 async function createNewStoryAndUpdatePage(evt) {
   evt.preventDefault();
@@ -68,6 +68,10 @@ function findStoryUsingId(storyList, id) {
  */
 function generateStoryMarkup(story, starClass) {
   // console.debug("generateStoryMarkup", story);
+  let trashIcon = "";
+  if(currentUser.ownStories.indexOf(story) != -1) {
+    trashIcon = '<i class="fa fa-trash"> </i>';
+  }
 
   const hostName = story.getHostName();
   return $(`
@@ -80,7 +84,9 @@ function generateStoryMarkup(story, starClass) {
         </a>
         <small class="story-hostname">(${hostName})</small>
         <small class="story-author">by ${story.author}</small>
+        <span class="trash-can">${trashIcon}</span>
         <small class="story-user">posted by ${story.username}</small>
+        
       </li>
     `);
 }
@@ -136,3 +142,14 @@ function putMyStoriesOnPage() {
   }
 
 }
+
+function removeStoryHandler(evt) {
+  let liElement = $(this).closest('li');
+  let storyId = liElement.attr("id");
+  console.log("StoryId:", storyId);
+  storyList.removeStory(currentUser, storyId);
+  currentUser.removeStory(storyId);
+}
+$allStoriesList.on("click", "li span i.fa-trash", removeStoryHandler);
+$favStoriesList.on("click", "li span i.fa-trash", removeStoryHandler);
+$myStoriesList.on("click", "li span i.fa-trash", removeStoryHandler);
