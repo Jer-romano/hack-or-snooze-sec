@@ -19,6 +19,8 @@ const $navLogOut = $("#nav-logout");
 const $navSubmit = $("#nav-submit");
 const $navFavorites = $("#nav-faves");
 const $navMyStories = $("#nav-my-stories");
+const $navDividers = $("span.divider");
+
 const $favIcons = $(".star");
 
 /** To make it easier for individual components to show just themselves, this
