@@ -187,10 +187,9 @@ class User {
       method: "POST",
       data: {token: this.loginToken} //should this be in a data object?
     });
-    console.log("Response: ", response);
+   // console.log("Response: ", response);
     //currentUser = response.data.user;
     this.favorites.push(findStoryUsingId(storyList, storyId)); //we don't need to create a new Story instance because it is being passed in
-    //currentUser = response.data.user;
   }
 
   /** Helper function for getting a story's index in the favorites array*/

@@ -61,13 +61,15 @@ function findStoryUsingId(storyList, id) {
 /**
  * A render method to render HTML for an individual Story instance
  * - story: an instance of Story
- *
+ * - starClass: whether or not the star icon is filled or empty
  * Returns the markup for the story.
  */
 function generateStoryMarkup(story, starClass) {
   // console.debug("generateStoryMarkup", story);
   let trashIcon = "";
-  if(currentUser != undefined && currentUser.ownStories.indexOf(story) != -1) {
+  //check to see if the story is a user's own story
+  let storyIndex = currentUser.ownStories.findIndex(ownStory => ownStory.storyId == story.storyId);
+  if(currentUser != undefined && storyIndex != -1) { //if so, add trash icon so there is the option to delete it
     trashIcon = '<i class="fa fa-trash"> </i>';
   }
   const hostName = story.getHostName();
@@ -96,7 +98,8 @@ function putStoriesOnPage() {
   // loop through all of our stories and generate HTML for them
   for (let story of storyList.stories) {
     let $story;
-    if(currentUser != undefined && currentUser.favorites.indexOf(story) != -1) { //is a favorite
+    let storyIndex = currentUser.favorites.findIndex(fStory => fStory.storyId == story.storyId);
+    if(currentUser != undefined && storyIndex != -1) { //is a favorite
       console.log("Here is a favorite");
       $story = generateStoryMarkup(story, "fas");
     }
@@ -128,8 +131,9 @@ function putMyStoriesOnPage() {
   $myStoriesList.empty();
   for(let story of currentUser.ownStories) {
     let $story;
-    if(currentUser != undefined && currentUser.favorites.indexOf(story) != -1) { //is a favorite
-      //console.log("Here is a favorite");
+    let storyIndex = currentUser.favorites.findIndex(fStory => fStory.storyId == story.storyId);
+    if(currentUser != undefined && storyIndex != -1) { //is a favorite
+      console.log("Here is a favorite");
       $story = generateStoryMarkup(story, "fas");
     }
     else { //not a favorite
