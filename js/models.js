@@ -98,6 +98,7 @@ class StoryList {
     return storyInstance;
   }
 
+  /**Helper function */
   getStoryIndex(storyId) {
     for(let i = 0; i < this.stories.length; i++) {
       if(this.stories[i].storyId == storyId) {
@@ -105,8 +106,9 @@ class StoryList {
       }
     }
     return -1;
-
   }
+
+  /**Makes API call to remove story. Also removes story from stories array */
   async removeStory(user, storyId) {
     let response = await axios({
       url: `${BASE_URL}/stories/${storyId}`,
@@ -116,7 +118,6 @@ class StoryList {
     let sIndex = this.stories.findIndex(function(el) {
       return el.storyId == storyId;
     });
-    
     this.stories.splice(sIndex, 1);
   }
 }
@@ -180,49 +181,61 @@ class User {
   }
 
   //if the request returns a user object, should the current user object be replaced with that one?
-  async addFavorite(story) {
+  async addFavorite(storyId) {
     const response = await axios({
-      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
       method: "POST",
       data: {token: this.loginToken} //should this be in a data object?
     });
     console.log("Response: ", response);
     //currentUser = response.data.user;
-    this.favorites.push(story); //we don't need to create a new Story instance because it is being passed in
+    this.favorites.push(findStoryUsingId(storyList, storyId)); //we don't need to create a new Story instance because it is being passed in
     //currentUser = response.data.user;
   }
 
-  async removeFavorite(story) {
+  /** Helper function for getting a story's index in the favorites array*/
+  getFavStoryIndex(storyId) {
+    for(let i = 0; i < this.favorites.length; i++) {
+      if(this.favorites[i].storyId == storyId) {
+        return i;
+      }
+    }
+    return undefined;
+
+  }
+
+  /**Removes a favorite from a user's favorites list */
+  async removeFavorite(storyId) {
     const response = await axios({
-      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
       method: "DELETE",
       data: {token: this.loginToken} 
     });
     //console.log(response);
-    let favIndex = currentUser.favorites.indexOf(story);
-    if(favIndex == -1) console.log("STORY NOT FOUND");
-    currentUser.favorites.splice(favIndex, 1); //remove story from favorites array
+  
+    let favIndex = this.getFavStoryIndex(storyId);
+    if(favIndex == undefined) {
+      console.log("STORY NOT FOUND");
+    }
+    else currentUser.favorites.splice(favIndex, 1); //remove story from favorites array
   }
 
+  /** Removes a story from a user's ownStories array, as well as their favorites array, if applicable */
   removeStory(storyId) {
-    let sIndex = this.ownStories.findIndex(function(el) {
-      return el.storyId == storyId;
-    });
+    let sIndex = this.ownStories.findIndex((el) => el.storyId == storyId);
     this.ownStories.splice(sIndex, 1);
 
-    let favIndex = this.favorites.findIndex(function(el) {
-      return el.storyId == storyId;
-    });
+    let favIndex = this.favorites.findIndex((el) => el.storyId == storyId);
     if( favIndex != -1) {
       this.favorites.splice(favIndex, 1);
     }
   }
+
   /** Login user with API, make User instance & return it.
 
    * - username: an existing user's username
    * - password: an existing user's password
    */
-
   static async login(username, password) {
     const response = await axios({
       url: `${BASE_URL}/login`,

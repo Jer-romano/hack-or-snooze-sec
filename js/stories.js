@@ -17,24 +17,18 @@ async function getAndShowStoriesOnStart() {
  * function should get the story instance assc. with that li
  * add that story instance to favorites
  */
-
+/**Function for either favoriting or unfavoriting a story */
 function favoriteToggleHandler(evt) { //should change to finding story by ID
   let liElement = $(this).closest('li');
-  console.log("This: ", this);
   let storyId = liElement.attr("id");
-   // console.log(liIndex);
-  let story = findStoryUsingId(storyList.stories, storyId);
-  //console.log("You favorited/unfavorited something");
-  //console.log("Story: ", story);
+
   if(evt.target.classList.contains("far")) { //favoriting
     evt.target.classList.replace("far", "fas");
-   
-   currentUser.addFavorite(story);
+   currentUser.addFavorite(storyId);
   }
   else { //unfavoriting
     evt.target.classList.replace("fas", "far");
-    //console.log("index to remove: ", liIndex);
-      currentUser.removeFavorite(story);
+      currentUser.removeFavorite(storyId);
   }
 
 }
@@ -42,6 +36,7 @@ $allStoriesList.on("click", "li span i.fa-star", favoriteToggleHandler);
 $favStoriesList.on("click", "li span i.fa-star", favoriteToggleHandler);
 $myStoriesList.on("click", "li span i.fa-star", favoriteToggleHandler);
 
+/**Called when user submits a new story. Updates page with new story */
 async function createNewStoryAndUpdatePage(evt) {
   evt.preventDefault();
   $submitForm.hide();
@@ -50,16 +45,19 @@ async function createNewStoryAndUpdatePage(evt) {
                url: $("#submit-url").val()};
   await storyList.addStory(currentUser, story);
 
+  $submitForm[0].reset();
   putStoriesOnPage();
 }
 $submitForm.on("submit", createNewStoryAndUpdatePage);
 
+/**Helper function */
 function findStoryUsingId(storyList, id) {
-  for(let story of storyList) {
+  for(let story of storyList.stories) {
     if (story.storyId == id) return story;
   }
   return undefined;
 }
+
 /**
  * A render method to render HTML for an individual Story instance
  * - story: an instance of Story
@@ -69,10 +67,9 @@ function findStoryUsingId(storyList, id) {
 function generateStoryMarkup(story, starClass) {
   // console.debug("generateStoryMarkup", story);
   let trashIcon = "";
-  if(currentUser.ownStories.indexOf(story) != -1) {
+  if(currentUser != undefined && currentUser.ownStories.indexOf(story) != -1) {
     trashIcon = '<i class="fa fa-trash"> </i>';
   }
-
   const hostName = story.getHostName();
   return $(`
       <li id="${story.storyId}">
@@ -92,12 +89,10 @@ function generateStoryMarkup(story, starClass) {
 }
 
 /** Gets list of stories from server, generates their HTML, and puts on page. */
-
 function putStoriesOnPage() {
   console.debug("putStoriesOnPage");
 
   $allStoriesList.empty();
-
   // loop through all of our stories and generate HTML for them
   for (let story of storyList.stories) {
     let $story;
@@ -114,6 +109,7 @@ function putStoriesOnPage() {
   $allStoriesList.show();
 }
 
+/**Puts a user's favorite stories on page when they click on the "favorites" button in navbar */
 function putFavStoriesOnPage() {
   console.debug("putFavStoriesOnPage");
 
@@ -125,6 +121,7 @@ function putFavStoriesOnPage() {
 
 }
 
+/**Puts a user's own stories on page when they click on the "my stories" button in navbar */
 function putMyStoriesOnPage() {
   console.debug("putMyStoriesOnPage");
 
@@ -143,13 +140,15 @@ function putMyStoriesOnPage() {
 
 }
 
+/**Called when a user clicks the trash icon next to a story. Removes story locally and from API */
 function removeStoryHandler(evt) {
   let liElement = $(this).closest('li');
   let storyId = liElement.attr("id");
-  console.log("StoryId:", storyId);
-  storyList.removeStory(currentUser, storyId);
-  currentUser.removeStory(storyId);
+  //console.log("StoryId:", storyId);
+  storyList.removeStory(currentUser, storyId); //API call
+  currentUser.removeStory(storyId); //local
+  liElement.remove(); //DOM removal
 }
-$allStoriesList.on("click", "li span i.fa-trash", removeStoryHandler);
+$allStoriesList.on("click", "li span i.fa-trash", removeStoryHandler); //Can be removed from any of the 3 lists
 $favStoriesList.on("click", "li span i.fa-trash", removeStoryHandler);
 $myStoriesList.on("click", "li span i.fa-trash", removeStoryHandler);
