@@ -9,7 +9,7 @@ async function getAndShowStoriesOnStart() {
   storyList = await StoryList.getStories();
   $storiesLoadingMsg.remove();
 
-  putStoriesOnPage();
+  putStoriesOnPageWhileLoggedOut();
 }
 
 /**
@@ -67,9 +67,14 @@ function findStoryUsingId(storyList, id) {
 function generateStoryMarkup(story, starClass) {
   // console.debug("generateStoryMarkup", story);
   let trashIcon = "";
-  //check to see if the story is a user's own story
-  let storyIndex = currentUser.ownStories.findIndex(ownStory => ownStory.storyId == story.storyId);
-  if(currentUser != undefined && storyIndex != -1) { //if so, add trash icon so there is the option to delete it
+  let storyIndex;
+  if(currentUser == undefined) {
+    storyIndex = -1;
+  }
+  else { //check to see if the story is a user's own story
+    storyIndex = currentUser.ownStories.findIndex(ownStory => ownStory.storyId == story.storyId);
+  }
+  if(storyIndex != -1) { //if so, add trash icon so there is the option to delete it
     trashIcon = '<i class="fa fa-trash"> </i>';
   }
   const hostName = story.getHostName();
@@ -106,6 +111,21 @@ function putStoriesOnPage() {
     else { //not a favorite
       $story = generateStoryMarkup(story, "far");
     }
+    $allStoriesList.append($story);
+  }
+
+  $allStoriesList.show();
+}
+
+/** Gets list of stories from server, generates their HTML, and puts on page, while logged out. */
+function putStoriesOnPageWhileLoggedOut() {
+  console.debug("putStoriesOnPageWhileLoggedOut");
+
+  $allStoriesList.empty();
+  // loop through all of our stories and generate HTML for them
+  for (let story of storyList.stories) {
+    let $story;
+    $story = generateStoryMarkup(story, "far");
     $allStoriesList.append($story);
   }
 
