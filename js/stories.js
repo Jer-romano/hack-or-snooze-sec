@@ -9,7 +9,7 @@ async function getAndShowStoriesOnStart() {
   storyList = await StoryList.getStories();
   $storiesLoadingMsg.remove();
 
-  putStoriesOnPageWhileLoggedOut();
+  putStoriesOnPage();
 }
 
 /**
@@ -101,19 +101,28 @@ function putStoriesOnPage() {
 
   $allStoriesList.empty();
   // loop through all of our stories and generate HTML for them
-  for (let story of storyList.stories) {
-    let $story;
-    let storyIndex = currentUser.favorites.findIndex(fStory => fStory.storyId == story.storyId);
-    if(currentUser != undefined && storyIndex != -1) { //is a favorite
-      console.log("Here is a favorite");
-      $story = generateStoryMarkup(story, "fas");
+  if(currentUser != undefined && currentUser.favorites.length != 0) {
+    for (let story of storyList.stories) {
+      let $story;
+      let storyIndex = currentUser.favorites.findIndex(fStory => fStory.storyId == story.storyId);
+      if(storyIndex != -1) { //is a favorite
+        console.log("Here is a favorite");
+        $story = generateStoryMarkup(story, "fas");
+      }
+      else { //not a favorite
+        $story = generateStoryMarkup(story, "far");
+      }
+      $allStoriesList.append($story);
     }
-    else { //not a favorite
-      $story = generateStoryMarkup(story, "far");
-    }
-    $allStoriesList.append($story);
-  }
 
+  }
+  else {
+    for (let story of storyList.stories) {
+      let $story = generateStoryMarkup(story, "far");
+      $allStoriesList.append($story);
+    }
+  }
+  
   $allStoriesList.show();
 }
 
