@@ -80,21 +80,26 @@ class StoryList {
    *
    * Returns the new Story instance
    */
-
   async addStory(user, newStory) {
-    let response = await axios({
-      url: `${BASE_URL}/stories`,
-      method: "POST",
-      data: {token: user.loginToken,
-      story: {author: newStory.author,
-              title: newStory.title,
-              url: newStory.url,
-            }}
-    });
+    try {
+      let response = await axios({
+        url: `${BASE_URL}/stories`,
+        method: "POST",
+        data: {token: user.loginToken,
+        story: {author: newStory.author,
+                title: newStory.title,
+                url: newStory.url,
+              }}
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
+    //use destructuring to pull out story data from API response
     const {story: {storyId, createdAt, title, author, url, username}} = response.data;
     let storyInstance = new Story({storyId, title, author, url, username, createdAt});
     this.stories.unshift(storyInstance); //adds story to beginning of list
-    user.ownStories.push(storyInstance);
+    user.ownStories.unshift(storyInstance);
     return storyInstance;
   }
 
@@ -110,14 +115,17 @@ class StoryList {
 
   /**Makes API call to remove story. Also removes story from stories array */
   async removeStory(user, storyId) {
-    let response = await axios({
-      url: `${BASE_URL}/stories/${storyId}`,
-      method: "DELETE",
-      data: {token: user.loginToken}
-    });
-    let sIndex = this.stories.findIndex(function(el) {
-      return el.storyId == storyId;
-    });
+    try {
+      let response = await axios({
+        url: `${BASE_URL}/stories/${storyId}`,
+        method: "DELETE",
+        data: {token: user.loginToken}
+      });
+    }
+    catch (error) {
+      console.error(error);
+    }
+    let sIndex = this.stories.findIndex((el) => el.storyId == storyId);
     this.stories.splice(sIndex, 1);
   }
 }
@@ -182,11 +190,16 @@ class User {
 
   //if the request returns a user object, should the current user object be replaced with that one?
   async addFavorite(storyId) {
-    const response = await axios({
-      url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
-      method: "POST",
-      data: {token: this.loginToken} //should this be in a data object?
-    });
+    try {
+      const response = await axios({
+        url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
+        method: "POST",
+        data: {token: this.loginToken} //should this be in a data object?
+      });
+    } catch (error) {
+      console.error(error);
+    }
+ 
    // console.log("Response: ", response);
     //currentUser = response.data.user;
     this.favorites.push(findStoryUsingId(storyList, storyId)); //we don't need to create a new Story instance because it is being passed in
@@ -205,11 +218,15 @@ class User {
 
   /**Removes a favorite from a user's favorites list */
   async removeFavorite(storyId) {
-    const response = await axios({
-      url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
-      method: "DELETE",
-      data: {token: this.loginToken} 
-    });
+    try {
+      const response = await axios({
+        url: `${BASE_URL}/users/${this.username}/favorites/${storyId}`,
+        method: "DELETE",
+        data: {token: this.loginToken} 
+      });
+    } catch (error) {
+      console.error(error);
+    }
     //console.log(response);
   
     let favIndex = this.getFavStoryIndex(storyId);

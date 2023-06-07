@@ -65,7 +65,7 @@ function findStoryUsingId(storyList, id) {
  * Returns the markup for the story.
  */
 function generateStoryMarkup(story, starClass) {
-  // console.debug("generateStoryMarkup", story);
+  console.debug("generateStoryMarkup", story);
   let trashIcon = "";
   let storyIndex;
   if(currentUser == undefined) {
@@ -101,6 +101,7 @@ function putStoriesOnPage() {
 
   $allStoriesList.empty();
   // loop through all of our stories and generate HTML for them
+  console.log(currentUser)
   if(currentUser != undefined && currentUser.favorites.length != 0) {
     for (let story of storyList.stories) {
       let $story;
@@ -126,7 +127,9 @@ function putStoriesOnPage() {
   $allStoriesList.show();
 }
 
-/** Gets list of stories from server, generates their HTML, and puts on page, while logged out. */
+
+
+/** Gets list of stories from server, generates their HTML, and puts on page, while logged out. 
 function putStoriesOnPageWhileLoggedOut() {
   console.debug("putStoriesOnPageWhileLoggedOut");
 
@@ -140,6 +143,7 @@ function putStoriesOnPageWhileLoggedOut() {
 
   $allStoriesList.show();
 }
+*/
 
 /**Puts a user's favorite stories on page when they click on the "favorites" button in navbar */
 function putFavStoriesOnPage() {
